@@ -35,7 +35,7 @@ class QLearner(nn.Module):
             nn.Linear(512, self.num_actions)
         )
         
-    def forward(self, x):
+    def forward(self, x): #Forward pass to the NN
         x = self.features(x)
         x = x.view(x.size(0), -1)
         x = self.fc(x)
@@ -45,14 +45,12 @@ class QLearner(nn.Module):
             return self.features(autograd.Variable(torch.zeros(1, *self.input_shape))).view(1, -1).size(1)
     
     def act(self, state, epsilon):
-        if random.random() > epsilon:
+        if random.random() > epsilon: #YT: To deteriine if the angent will choose exploreation/explotatin at each time step
+                                        # we genrate a random number between 0 and 1. If this number is greater than epsilon, 
+                                        # the agent will chose its next action via explotation (highest value in the Qtable)
             state = Variable(torch.FloatTensor(np.float32(state)).unsqueeze(0), requires_grad=True)
             # TODO: Given state, you should write code to get the Q value and chosen action
-        
-
-
-
-
+            qvalues = QLearner.forward(state)
 
         else:
             action = random.randrange(self.env.action_space.n)
