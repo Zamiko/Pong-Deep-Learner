@@ -51,6 +51,7 @@ class QLearner(nn.Module):
             state = Variable(torch.FloatTensor(np.float32(state)).unsqueeze(0), requires_grad=True)
             # TODO: Given state, you should write code to get the Q value and chosen action
             qvalues = self.forward(state)
+            print(qvalues)
 
         else:
             action = random.randrange(self.env.action_space.n)
