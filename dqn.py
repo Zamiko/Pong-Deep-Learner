@@ -50,7 +50,7 @@ class QLearner(nn.Module):
                                         # the agent will chose its next action via explotation (highest value in the Qtable)
             state = Variable(torch.FloatTensor(np.float32(state)).unsqueeze(0), requires_grad=True)
             # TODO: Given state, you should write code to get the Q value and chosen action
-            qvalues = QLearner.forward(state)
+            qvalues = self.forward(state)
 
         else:
             action = random.randrange(self.env.action_space.n)
