@@ -53,12 +53,7 @@ class QLearner(nn.Module):
             # TODO: Given state, you should write code to get the Q value and chosen action
             qvalues = self.forward(state.data)
             np_qvalues = qvalues.detach().cpu().numpy()
-            #action = 1
-            action = np_qvalues[0][np.argmax(np_qvalues)]
-            print(qvalues.data[0])
-            print(np_qvalues)
-            print(action)
-            print("\n")
+            action = np.argmax(np_qvalues)
 
         else:
             action = random.randrange(self.env.action_space.n)
