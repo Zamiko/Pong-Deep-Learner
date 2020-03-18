@@ -1,4 +1,5 @@
 from collections import deque
+import collections
 import numpy as np
 import matplotlib.pyplot as plt
 import torch
@@ -50,7 +51,7 @@ class QLearner(nn.Module):
                                         # the agent will chose its next action via explotation (highest value in the Qtable)
             state = Variable(torch.FloatTensor(np.float32(state)).unsqueeze(0), requires_grad=True)
             # TODO: Given state, you should write code to get the Q value and chosen action
-            qvalues = self.forward(state)
+            qvalues = self.forward(state.data)
             action = qvalues.argmax()
 
         else:
@@ -70,9 +71,13 @@ def compute_td_loss(model, target_model, batch_size, gamma, replay_buffer):
     reward = Variable(torch.FloatTensor(reward))
     done = Variable(torch.FloatTensor(done))
     # implement the loss function here
+    #target_y = target_model.forward(next_state) #DO I need to get the max q value??
+    #predict_y = mode.forward(state)
+    predicted_Q_vals = model.forward(state)
+    next_Q_vals = target_model.forward(next_state.data)
+    target_Q_vals =(next_Q_vals * gamma) + reward
+    loss = (target_Q_vals - predicted_Q_vals).square()
 
-
-    
     return loss
 
 
@@ -88,8 +93,17 @@ class ReplayBuffer(object):
 
     def sample(self, batch_size):
         # TODO: Randomly sampling data with specific batch size from the buffer
-
-
+        sampling = random.sample(self.buffer, batch_size)
+        Experience = collections.namedtuple(
+            'Experience',
+            ('state', 'action', 'reward', 'next_state', 'done')
+        )
+        batch = Experience(*zip(*sampling))
+        state = batch.state
+        action = batch.action
+        reward = batch.reward
+        next_state = batch.next_state
+        done = batch.done
         return state, action, reward, next_state, done
 
     def __len__(self):
