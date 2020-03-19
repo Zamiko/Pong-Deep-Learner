@@ -72,13 +72,17 @@ def compute_td_loss(model, target_model, batch_size, gamma, replay_buffer):
     action = Variable(torch.LongTensor(action))
     reward = Variable(torch.FloatTensor(reward))
     done = Variable(torch.FloatTensor(done))
-    # implement the loss function here
+    # implement the loss function here:   Lossi(Θi) = (yi − Q(s, a; Θi))^2
     #target_y = target_model.forward(next_state) #DO I need to get the max q value??
     #predict_y = mode.forward(state)
-    predicted_Q_vals = model.forward(state)
-    next_Q_vals = target_model.forward(next_state.data)
-    target_Q_vals =(next_Q_vals * gamma) + reward
-    loss = (target_Q_vals - predicted_Q_vals).square()
+    #yi_qvalues =  model.forward(state)
+    
+
+
+    # predicted_Q_vals = model.forward(state)
+    # next_Q_vals = target_model.forward(next_state.data)
+    # target_Q_vals =(next_Q_vals * gamma) + reward
+    # loss = (target_Q_vals - predicted_Q_vals).square()
 
     return loss
 
