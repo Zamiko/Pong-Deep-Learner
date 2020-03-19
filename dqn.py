@@ -66,7 +66,7 @@ class QLearner(nn.Module):
         
 def compute_td_loss(model, target_model, batch_size, gamma, replay_buffer):
     state, action, reward, next_state, done = replay_buffer.sample(batch_size)
-
+    
     state = Variable(torch.FloatTensor(np.float32(state)))
     next_state = Variable(torch.FloatTensor(np.float32(next_state)).squeeze(1), requires_grad=True)
     action = Variable(torch.LongTensor(action))
@@ -77,8 +77,27 @@ def compute_td_loss(model, target_model, batch_size, gamma, replay_buffer):
     #predict_y = mode.forward(state)
     #yi_qvalues =  model.forward(state)
     
+    np_state = np.squeeze(state.detach().cpu().numpy())
+    np_state = np.expand_dims(np_state, axis = 1)
+    np_state = Variable(torch.FloatTensor(np_state))
+    np_action = action.detach().cpu().numpy()
+    np_reward = reward.detach().cpu().numpy()
+    
+    q = target_model.forward(next_state).detach().cpu().numpy()
+    y = model.forward(np_state).detach().cpu().numpy()
 
-
+    Yi = np.zeros((batch_size, 1)) 
+    Q = np.zeros((batch_size, 1))
+    for a in range(0, batch_size):
+        Yi[a] = y[a][np_action[a]]
+        Q[a] = gamma * q[a][np.argmax(q[a])] + np_reward[a]
+        
+    loss = np.power(Yi - Q,2) 
+    loss = np.sum(loss)
+    loss = Variable(torch.FloatTensor([loss]), requires_grad=True)    
+    #for i in range(0, batch_size):
+     #   y = model.forward(torch.LongTensor(np_state[i]))
+      #  print(y)
     # predicted_Q_vals = model.forward(state)
     # next_Q_vals = target_model.forward(next_state.data)
     # target_Q_vals =(next_Q_vals * gamma) + reward
