@@ -63,6 +63,9 @@ for frame_idx in range(1, num_frames + 1):
         state = env.reset()
         all_rewards.append((frame_idx, episode_reward))
         episode_reward = 0
+        torch.save(model.state_dict(), 'myModel.pth')
+        np.save('loss.npy', losses)
+        np.save('rewards', all_rewards)
 
     if len(replay_buffer) > replay_initial:
         loss = compute_td_loss(model, target_model, batch_size, gamma, replay_buffer)
@@ -81,7 +84,7 @@ for frame_idx in range(1, num_frames + 1):
     if frame_idx % 50000 == 0:
         target_model.copy_from(model)
 
-    torch.save(model.state_dict(), 'myModel.pth')
+    #torch.save(model.state_dict(), 'myModel.pth')
 
 np.save('loss.npy', losses)
 np.save('rewards.npy', all_rewards)
