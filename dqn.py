@@ -93,7 +93,7 @@ def compute_td_loss(model, target_model, batch_size, gamma, replay_buffer):
         Yi[a] = y[a][np_action[a]]
         if np_done[a] == 1:
             Q[a] = np_reward[a]
-            break
+        
         else:
             Q[a] = gamma * q[a][np.argmax(q[a])] + np_reward[a]
         
