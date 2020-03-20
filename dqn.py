@@ -82,6 +82,7 @@ def compute_td_loss(model, target_model, batch_size, gamma, replay_buffer):
     np_state = Variable(torch.FloatTensor(np_state))
     np_action = action.detach().cpu().numpy()
     np_reward = reward.detach().cpu().numpy()
+    np_done = done.detach().cpu().numpy()
     
     q = target_model.forward(next_state).detach().cpu().numpy()
     y = model.forward(np_state).detach().cpu().numpy()
@@ -90,7 +91,11 @@ def compute_td_loss(model, target_model, batch_size, gamma, replay_buffer):
     Q = np.zeros((batch_size, 1))
     for a in range(0, batch_size):
         Yi[a] = y[a][np_action[a]]
-        Q[a] = gamma * q[a][np.argmax(q[a])] + np_reward[a]
+        if np_done[a] == 1:
+            Q[a] = np_reward[a]
+            break
+        else:
+            Q[a] = gamma * q[a][np.argmax(q[a])] + np_reward[a]
         
     loss = np.power(Yi - Q,2) 
     loss = np.sum(loss)
@@ -124,6 +129,7 @@ class ReplayBuffer(object):
             ('state', 'action', 'reward', 'next_state', 'done')
         )
         batch = Experience(*zip(*sampling))
+        #print(batch)
         state = batch.state
         action = batch.action
         reward = batch.reward
