@@ -17,7 +17,7 @@ env = make_atari(env_id)
 env = wrap_deepmind(env)
 env = wrap_pytorch(env)
 
-num_frames = 1500000
+num_frames = 1000000
 batch_size = 32
 gamma = 0.99
 record_idx = 10000
@@ -80,6 +80,7 @@ for frame_idx in range(1, num_frames + 1):
     if frame_idx % 10000 == 0 and len(replay_buffer) > replay_initial:
         print('#Frame: %d, Loss: %f' % (frame_idx, np.mean(losses, 0)[1]))
         print('Last-10 average reward: %f' % np.mean(all_rewards[-10:], 0)[1])
+        torch.save(model.state_dict(), 'myModel.pth')
 
     if frame_idx % 50000 == 0:
         target_model.copy_from(model)

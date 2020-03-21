@@ -83,6 +83,7 @@ def compute_td_loss(model, target_model, batch_size, gamma, replay_buffer):
     np_action = action.detach().cpu().numpy()
     np_reward = reward.detach().cpu().numpy()
     np_done = done.detach().cpu().numpy()
+
     
     q = target_model.forward(next_state).detach().cpu().numpy()
     y = model.forward(np_state).detach().cpu().numpy()
