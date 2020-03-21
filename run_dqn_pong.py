@@ -63,9 +63,9 @@ for frame_idx in range(1, num_frames + 1):
         state = env.reset()
         all_rewards.append((frame_idx, episode_reward))
         episode_reward = 0
-        torch.save(model.state_dict(), 'myModel.pth')
-        np.save('loss.npy', losses)
-        np.save('rewards', all_rewards)
+        torch.save(model.state_dict(), 'myModel_'+str(frame_idx) + '.pth')
+        np.save('loss_' + str(frame_idx) + '.npy', losses)
+        np.save('rewards_' + str(frame_idx) + '.npy', all_rewards)
 
     if len(replay_buffer) > replay_initial:
         loss = compute_td_loss(model, target_model, batch_size, gamma, replay_buffer)
@@ -80,12 +80,13 @@ for frame_idx in range(1, num_frames + 1):
     if frame_idx % 10000 == 0 and len(replay_buffer) > replay_initial:
         print('#Frame: %d, Loss: %f' % (frame_idx, np.mean(losses, 0)[1]))
         print('Last-10 average reward: %f' % np.mean(all_rewards[-10:], 0)[1])
-        torch.save(model.state_dict(), 'myModel.pth')
+        torch.save(model.state_dict(), 'myModel_'+str(frame_idx)+ '.pth')
+        np.save('loss_'+str(frame_idx) + '.npy', losses)
+        np.save('rewards_' + str(frame_idx) + '.npy', all_rewards)
 
     if frame_idx % 50000 == 0:
         target_model.copy_from(model)
 
     #torch.save(model.state_dict(), 'myModel.pth')
 
-np.save('loss.npy', losses)
-np.save('rewards.npy', all_rewards)
+
